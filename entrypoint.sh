@@ -76,8 +76,23 @@ label_when_approved() {
   done
 }
 
+remove_label_when_dismissed() {
+  if [[ -n "$addLabel" ]]; then
+    echo "Remove label"
+
+    curl -sSL \
+      -H "${AUTH_HEADER}" \
+      -H "${API_HEADER}" \
+      -X DELETE \
+      "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${addLabel}"
+  fi
+}
+
+echo "Try to execute: action= ${action} state= ${state}"
 if [[ "$action" == "submitted" ]] && [[ "$state" == "approved" ]]; then
   label_when_approved
+elif [[ "$action" == "dismissed" ]] && [[ "$state" == "dismissed" ]]; then
+  remove_label_when_dismissed
 else
   echo "Ignoring event ${action}/${state}"
 fi
